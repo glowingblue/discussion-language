@@ -15,7 +15,7 @@ use Flarum\Api\Serializer\AbstractSerializer;
 use Flarum\Api\Serializer\DiscussionSerializer;
 use Flarum\Discussion\Discussion;
 use Flarum\Settings\SettingsRepositoryInterface;
-use Matriphe\ISO639\ISO639;
+use IanM\ISO639\ISO639;
 use Rinvex\Country\CountryLoader;
 
 class DiscussionLanguageSerializer extends AbstractSerializer
@@ -44,6 +44,7 @@ class DiscussionLanguageSerializer extends AbstractSerializer
     protected function getDefaultAttributes($model)
     {
         $native = (bool) $this->settings->get('fof-discussion-language.native');
+        $showFlag = (bool) $this->settings->get('fof-discussion-language.showFlags', false);
 
         try {
             $country = CountryLoader::country($model->country);
@@ -60,7 +61,7 @@ class DiscussionLanguageSerializer extends AbstractSerializer
                     : $this->iso->languageByCode1($model->code)
             ) ?: null,
 
-            'emoji' => isset($country) ? $country->getEmoji() : null,
+            'emoji' => $showFlag ? (isset($country) ? $country->getEmoji() : null) : null,
         ];
     }
 

@@ -24,6 +24,9 @@ export default class LanguagesSettingsModal extends Modal {
 
         this.nativeKey = 'fof-discussion-language.native';
         this.native = app.data.settings[this.nativeKey];
+
+        this.showFlagsKey = 'fof-discussion-language.showFlags';
+        this.showFlags = app.data.settings[this.showFlagsKey];
     }
 
     className() {
@@ -46,6 +49,16 @@ export default class LanguagesSettingsModal extends Modal {
                         onchange: (val) => (this.native = val),
                         children: app.translator.trans('fof-discussion-language.admin.settings.native_label'),
                     })}
+                </div>
+
+                <div className="Form-group">
+                    {Switch.component(
+                        {
+                            state: this.showFlags,
+                            onchange: (val) => (this.showFlags = val),
+                        },
+                        app.translator.trans('fof-discussion-language.admin.settings.show_flag_label')
+                    )}
                 </div>
 
                 <div className="Form-group flex">
@@ -163,14 +176,14 @@ export default class LanguagesSettingsModal extends Modal {
                 return language
                     .save({ code: this.codes[id], country: this.countries[id] })
                     .then(
-                        () => {},
-                        () => {}
+                        () => { },
+                        () => { }
                     )
                     .then(() => {
                         this.updating[id] = false;
                     });
             }),
-            saveSettings({ [this.nativeKey]: this.native }),
+            saveSettings({ [this.nativeKey]: this.native, [this.showFlagsKey]: this.showFlags }),
         ]).then(this.hide.bind(this), this.loaded.bind(this));
     }
 
@@ -180,8 +193,8 @@ export default class LanguagesSettingsModal extends Modal {
         language
             .delete()
             .then(
-                () => {},
-                () => {}
+                () => { },
+                () => { }
             )
             .then(() => {
                 delete this.deleting[language.id()];
@@ -198,6 +211,6 @@ export default class LanguagesSettingsModal extends Modal {
     }
 
     changed() {
-        return this.dirty().length || Number(this.native) !== Number(app.data.settings[this.nativeKey] || 0);
+        return this.dirty().length || Number(this.native) !== Number(app.data.settings[this.nativeKey] || 0) || Number(this.showFlags) !== Number(app.data.settings[this.showFlagsKey] || 0);
     }
 }
