@@ -28,6 +28,9 @@ export default () => {
     };
 
     extend(DiscussionComposer.prototype, 'headerItems', function (items) {
+        if (!this.language) {
+            this.language = app.store.getBy('discussion-languages', 'code', app.translator.locale);
+        }
         items.add(
             'language',
             <a className="DiscussionComposer-changeTags" onclick={this.chooseLanguage.bind(this, true, null)}>

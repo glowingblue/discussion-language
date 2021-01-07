@@ -52,13 +52,11 @@ export default class LanguagesSettingsModal extends Modal {
                 </div>
 
                 <div className="Form-group">
-                    {Switch.component(
-                        {
-                            state: this.showFlags,
-                            onchange: (val) => (this.showFlags = val),
-                        },
-                        app.translator.trans('fof-discussion-language.admin.settings.show_flag_label')
-                    )}
+                    {Switch.component({
+                        state: this.showFlags,
+                        onchange: (value) => (this.showFlags = value),
+                        children: app.translator.trans('fof-discussion-language.admin.settings.show_flag_label'),
+                    })}
                 </div>
 
                 <div className="Form-group flex">
@@ -176,8 +174,8 @@ export default class LanguagesSettingsModal extends Modal {
                 return language
                     .save({ code: this.codes[id], country: this.countries[id] })
                     .then(
-                        () => { },
-                        () => { }
+                        () => {},
+                        () => {}
                     )
                     .then(() => {
                         this.updating[id] = false;
@@ -193,8 +191,8 @@ export default class LanguagesSettingsModal extends Modal {
         language
             .delete()
             .then(
-                () => { },
-                () => { }
+                () => {},
+                () => {}
             )
             .then(() => {
                 delete this.deleting[language.id()];
@@ -211,6 +209,10 @@ export default class LanguagesSettingsModal extends Modal {
     }
 
     changed() {
-        return this.dirty().length || Number(this.native) !== Number(app.data.settings[this.nativeKey] || 0) || Number(this.showFlags) !== Number(app.data.settings[this.showFlagsKey] || 0);
+        return (
+            this.dirty().length ||
+            Number(this.native) !== Number(app.data.settings[this.nativeKey] || 0) ||
+            Number(this.showFlags) !== Number(app.data.settings[this.showFlagsKey] || 0)
+        );
     }
 }
