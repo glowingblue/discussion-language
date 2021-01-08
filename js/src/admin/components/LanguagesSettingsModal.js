@@ -27,6 +27,9 @@ export default class LanguagesSettingsModal extends Modal {
 
         this.showFlagsKey = 'fof-discussion-language.showFlags';
         this.showFlags = app.data.settings[this.showFlagsKey];
+
+        this.localeSortKey = 'fof-discussion-language.filter_language_on_http_request';
+        this.localeSort = app.data.settings[this.localeSortKey];
     }
 
     className() {
@@ -56,6 +59,14 @@ export default class LanguagesSettingsModal extends Modal {
                         state: this.showFlags,
                         onchange: (value) => (this.showFlags = value),
                         children: app.translator.trans('fof-discussion-language.admin.settings.show_flag_label'),
+                    })}
+                </div>
+
+                <div className="Form-group">
+                    {Switch.component({
+                        state: this.localeSort,
+                        onchange: (value) => (this.localeSort = value),
+                        children: app.translator.trans('fof-discussion-language.admin.settings.locale_sort_label'),
                     })}
                 </div>
 
@@ -172,7 +183,10 @@ export default class LanguagesSettingsModal extends Modal {
                 this.updating[id] = true;
 
                 return language
-                    .save({ code: this.codes[id], country: this.countries[id] })
+                    .save({
+                        code: this.codes[id],
+                        country: this.countries[id],
+                    })
                     .then(
                         () => {},
                         () => {}
@@ -181,7 +195,11 @@ export default class LanguagesSettingsModal extends Modal {
                         this.updating[id] = false;
                     });
             }),
-            saveSettings({ [this.nativeKey]: this.native, [this.showFlagsKey]: this.showFlags }),
+            saveSettings({
+                [this.nativeKey]: this.native,
+                [this.showFlagsKey]: this.showFlags,
+                [this.localeSortKey]: this.localeSort,
+            }),
         ]).then(this.hide.bind(this), this.loaded.bind(this));
     }
 
@@ -209,10 +227,11 @@ export default class LanguagesSettingsModal extends Modal {
     }
 
     changed() {
-        return (
-            this.dirty().length ||
-            Number(this.native) !== Number(app.data.settings[this.nativeKey] || 0) ||
-            Number(this.showFlags) !== Number(app.data.settings[this.showFlagsKey] || 0)
-        );
+        const len = this.dirty().length;
+        const native = Number(this.native) !== Number(app.data.settings[this.nativeKey] || 0);
+        const flags = Number(this.showFlags) !== Number(app.data.settings[this.showFlagsKey] || 0);
+        const locale = Number(this.localeSort) !== Number(app.data.settings[this.localeSortKey] || 0);
+
+        return len || native || flags || locale;
     }
 }
