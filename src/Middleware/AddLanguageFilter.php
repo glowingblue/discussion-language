@@ -27,6 +27,11 @@ class AddLanguageFilter implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // We only want to apply language filtering if we show the discussion list.
+        if (!$this->isDiscussionListPath($request)) {
+            return $handler->handle($request);
+        }
+
         $params = $request->getQueryParams();
 
         if ($language = Arr::get($params, 'language')) {
@@ -62,6 +67,30 @@ class AddLanguageFilter implements MiddlewareInterface
         }
 
         return $handler->handle($request);
+    }
+
+    private function isDiscussionListPath($request)
+    {
+        $path = $request->getAttribute('originalUri')->getPath();
+
+        // Check for the 'index' route (showing all discussions)
+        /** @var SettingsRepositoryInterface */
+        $settings = app(SettingsRepositoryInterface::class);
+        $defaultRoute = $settings->get('default_route');
+        if ($defaultRoute === '/all') {
+            if ($path === '/') {
+                return true;
+            }
+        } else if ($path === '/all') {
+            return true;
+        }
+
+        // Check for the 'tag' route (tag page)
+        if (substr($path, 0, 2) === '/t') {
+            return true;
+        }
+
+        return false;
     }
 
     private function determineLanguageFromBrowserRequest(string $acceptLangs): string
