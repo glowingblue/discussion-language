@@ -29,9 +29,7 @@ export default () => {
     extend(DiscussionList.prototype, 'requestParams', function (params) {
         params.include.push('language');
 
-        if (this.props.params.language) {
-            params.filter.q = (params.filter.q || '') + ' language:' + this.props.params.language;
-        }
+        params.filter.q = (params.filter.q || '') + ' language:' + (this.props.params.language ? this.props.params.language : app.translator.locale);
     });
 
     extend(IndexPage.prototype, 'stickyParams', (params) => (params.language = m.route.param('language')));
@@ -40,12 +38,11 @@ export default () => {
         items.add(
             'language',
             LanguageDropdown.component({
-                extra: { any: app.translator.trans('fof-discussion-language.forum.index_language.any') },
-                default: 'any',
+                default: app.translator.locale,
                 onclick: (key) => {
                     const params = this.params();
 
-                    if (key === 'any') delete params.language;
+                    if (key === app.translator.locale) delete params.language;
                     else params.language = key;
 
                     m.route(app.route(this.props.routeName, params));
