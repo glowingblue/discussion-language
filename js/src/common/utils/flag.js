@@ -1,4 +1,5 @@
 import basename from 'twemoji-basename';
+import icon from 'flarum/helpers/icon';
 
 export default (language) => {
     if (!language) return;
@@ -6,7 +7,7 @@ export default (language) => {
     const emoji = language.emoji ? language.emoji() : language;
 
     return (
-        emoji && (
+        emoji ? (
             <img
                 alt={(language.country && language.country()) || ''}
                 className="emoji"
@@ -14,6 +15,6 @@ export default (language) => {
                 loading="lazy"
                 src={`//cdn.jsdelivr.net/gh/twitter/twemoji@12/assets/72x72/${basename(emoji)}.png`}
             />
-        )
+        ) : icon('fas fa-globe')
     );
 };
