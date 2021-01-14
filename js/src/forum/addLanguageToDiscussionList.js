@@ -29,7 +29,11 @@ export default () => {
     extend(DiscussionList.prototype, 'requestParams', function (params) {
         params.include.push('language');
 
-        params.filter.q = (params.filter.q || '') + ' language:' + (this.props.params.language ? this.props.params.language : app.translator.locale);
+        // If not showing private discussions, add the language filtering gambit
+        let q = params.filter.q || '';
+        if (!q.includes('is:private')) {
+            params.filter.q = q + ' language:' + (this.props.params.language ? this.props.params.language : app.translator.locale);
+        }
     });
 
     extend(IndexPage.prototype, 'stickyParams', (params) => (params.language = m.route.param('language')));
