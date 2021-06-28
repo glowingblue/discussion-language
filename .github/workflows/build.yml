@@ -4,6 +4,7 @@ on:
     push:
         branches:
             - master
+            - gb-stable1-0
 
 jobs:
     build:
